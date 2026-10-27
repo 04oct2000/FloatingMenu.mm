@@ -1,0 +1,19 @@
+name: Build iOS Dylib
+on: [push, workflow_dispatch]
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile FloatingMenu.dylib
+        run: |
+          clang++ -arch arm64 -dynamiclib \
+            -isysroot $(xcrun --sdk iphoneos --show-sdk-path) \
+            -miphoneos-version-min=12.0 \
+            -framework UIKit -framework Foundation -framework QuartzCore \
+            -fobjc-arc FloatingMenu.mm -o FloatingMenu.dylib
+      - name: Upload Dylib Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: FloatingMenu-dylib
+          path: FloatingMenu.dylib
